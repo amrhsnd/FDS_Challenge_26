@@ -55,6 +55,13 @@ folder inside this repository. Use the editable install for imports from elsewhe
 
 ## Work in parallel
 
+For a ready-to-run modelling workflow, copy `templates/modelling.ipynb` into your
+personal notebook folder. Leonard's working example is
+`notebooks/leonard/02_modelling_pipeline.ipynb`. Choose feature groups and model
+candidates in the notebook; the shared runner performs five-fold CV on development
+data, guards the holdout evaluation, and generates submissions when explicitly
+requested. See [the modelling guide](docs/MODELLING.md).
+
 1. Start with a clean `main`: `git switch main` then `git pull --ff-only`.
 2. Create a branch such as `leonard/timeline-features`.
 3. Work in your notebook folder and in a separately named shared Python module.

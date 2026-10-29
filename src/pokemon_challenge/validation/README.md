@@ -12,5 +12,8 @@ battles before deciding whether grouping is needed. Do not use the test set or
 leaderboard to tune features or model settings. Change the shared split strategy
 only with team agreement and re-evaluate comparisons after a change.
 
-Implement shared splitting/scoring modules here when modelling starts. This folder
-and config establish a convention; no evaluation runner is supplied yet.
+`splits.py` creates an initial 80/20 development/holdout partition and five folds
+within development data. `pokemon_challenge.experiment.BattleExperiment` performs
+comparisons using these assignments, saves scores and hashes, evaluates a chosen
+candidate on the holdout, and then refits it for submission. The holdout is not
+part of candidate comparison. See `docs/MODELLING.md` and `templates/modelling.ipynb`.

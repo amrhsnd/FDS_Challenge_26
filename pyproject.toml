@@ -7,7 +7,7 @@ name = "fds-pokemon-challenge"
 version = "0.1.0"
 description = "Shared tools for the FDS Pokemon battle prediction team"
 requires-python = ">=3.11"
-dependencies = ["numpy", "pandas", "scikit-learn", "tqdm"]
+dependencies = ["numpy", "pandas", "scikit-learn", "scipy", "joblib", "tqdm"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
