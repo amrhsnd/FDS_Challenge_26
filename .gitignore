@@ -1,5 +1,22 @@
+# Local Python environment and caches
 .venv/
-data/
-*.csv
 __pycache__/
+*.py[cod]
 .ipynb_checkpoints/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+
+# Competition inputs and generated artifacts
+/data/*
+!/data/README.md
+/outputs/*
+!/outputs/README.md
+
+# Local credentials and OS files
+.env
+.env.*
+!.env.example
+kaggle.json
+.DS_Store
