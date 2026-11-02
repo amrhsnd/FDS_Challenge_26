@@ -53,6 +53,41 @@ Copy `templates/exploration.ipynb` into your personal notebook folder for new wo
 Its setup cell also works without installing the shared package when run from a
 folder inside this repository. Use the editable install for imports from elsewhere.
 
+## Prepare shared Pokémon details
+
+After placing the official inputs in `data/raw/`, run once from the repository
+with the project environment activated:
+
+```bash
+python -m pokemon_challenge.preparation.pokemon_details
+```
+
+This reads only `train.jsonl` and saves
+`data/prepared/pokemon_details/pokemon_details.json`. To specify another source or
+destination, use `--train /path/to/train.jsonl --output-dir /path/to/prepared`.
+Re-run preparation when the training file changes; the artifact records its SHA256.
+Generated data is local and ignored by Git; commit the preparation code separately.
+
+Every notebook can then load the saved lookup without parsing training battles:
+
+```python
+from pokemon_challenge.preparation.pokemon_details import load_pokemon_details
+
+pokemon = load_pokemon_details()
+tyranitar_types = pokemon["tyranitar"]["types"]
+```
+
+The JSON's `pokemon` dictionary is keyed by species name and stores real types
+(excluding `notype`), the six base stats, observed levels/items, and initial
+level/item variants with counts and source fields. Levels and items are not
+species constants. A null item in a variant means that record did not supply one.
+Conflicting types or base stats cause preparation to fail rather than silently
+choose a value. Only P1 rosters and P2 initial leads supply initial attributes;
+timeline names are checked for coverage, with missing species listed under
+`coverage.timeline_species_without_initial_details`. These species remain absent
+from the lookup; use `pokemon.get(name)` and handle unknowns explicitly.
+No labels, test data, or external reference data are used.
+
 ## Work in parallel
 
 For a ready-to-run modelling workflow, copy `templates/modelling.ipynb` into your
