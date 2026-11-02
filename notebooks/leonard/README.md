@@ -43,9 +43,32 @@ refitted on all 10,000 labels to generate 5,000 test predictions. It is practica
 tied with the earlier boosting reference; the repeated exploratory CV does not
 establish a higher Kaggle score.
 
+[09_feature_selection.ipynb](09_feature_selection.ipynb) compares fold-fitted
+SelectKBest (100/300/1,000 features) and logistic RFE (300/1,000) with the best
+simple-model reference. No reduction improved mean CV accuracy. RFE300 retains
+about 7% of inputs with a descriptive 0.10 percentage-point accuracy loss.
+The notebook explains the pipeline and points to actual selected-feature lists.
+Run `run_feature_selection_experiment.py` to reproduce the six comparisons;
+it uses the validated caches and fixed splits from earlier local runs.
+
+The compact RFE300 version was subsequently chosen for simplicity. Run
+`finalize_rfe300_model.py` to refit its selection/classifier on all labels and
+save its exact 300-feature list plus a separate compact-model submission. Its
+recorded procedure CV accuracy is 67.159%; the all-data list must not be reused
+before future CV. See `experiments/leonard/20261102_rfe300_compact.md`.
+
+[10_matchup_features.ipynb](10_matchup_features.ipynb) compares the compact
+baseline with active matchups, team coverage and both groups. Team coverage adds
+16 inputs to the unchanged fold-fitted RFE300 baseline: **316 inputs, 67.259% mean
+CV accuracy**, versus 67.159% for the baseline. This small gain remains exploratory.
+Type lookup, imputation and scaling are learned inside training folds; no enemy
+team members are invented. Run `run_matchup_experiment.py` to reproduce.
+The selected model's separate submission is at:
+`outputs/leonard/20261102_154044_358954_matchups/submission.csv`.
+
 The runner scripts and feature implementations live beside their notebooks.
 `run_classical_identity_experiment.py` runs the initial classical comparison;
-`run_identity_scaling_followup.py` runs its three-setting follow-up. Twelve tests
+`run_identity_scaling_followup.py` runs its three-setting follow-up. The tests
 cover the common pipeline and custom feature/encoding/scaling invariants:
 
 ```bash
