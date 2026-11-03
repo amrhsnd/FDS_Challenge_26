@@ -138,12 +138,15 @@ class RequestedFeatureTests(unittest.TestCase):
             self.assertEqual(self.surplus(timeline),
                              {'p1_damage_surplus': 0., 'p2_damage_surplus': 0.})
         features = self.namespace['extract_selected_features']({})
-        self.assertEqual(len(features), 27)
+        self.assertEqual(len(features), 32)
         for removed in ('p1_fainting_turns', 'p1_positive_boosts_at_turn30',
                         'p2_positive_boosts_at_turn30'):
             self.assertNotIn(removed, features)
         self.assertNotIn('p2_lead_spe', features)
         self.assertIn('p2_mean_spe', features)
+        self.assertEqual(features['first_ko_advantage'], 0.0)
+        for name in self.namespace['NEW_FEATURE_COLUMNS']:
+            self.assertIn(name, features)
         self.assertIn('p1_damage_surplus', features)
         self.assertIn('p2_damage_surplus', features)
 
