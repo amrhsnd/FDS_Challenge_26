@@ -181,8 +181,10 @@ class BattleExperiment:
             scores = cross_validate(self._pipeline(candidate), X_dev[columns], y_dev, cv=self.folds,
                                     scoring="accuracy", n_jobs=1, error_score="raise", return_estimator=True)
             selected = [list(estimator[:-1].get_feature_names_out(columns)) for estimator in scores["estimator"]]
-            selection = pd.DataFrame({"feature": columns,
-                "selected_in_folds": [sum(column in names for names in selected) for column in columns]})
+            # Custom transformers can create named predictors absent from raw inputs.
+            reported_features = list(dict.fromkeys(columns + [name for names in selected for name in names]))
+            selection = pd.DataFrame({"feature": reported_features,
+                "selected_in_folds": [sum(column in names for names in selected) for column in reported_features]})
             selection.to_csv(self.output_path / f"selection_frequency_{candidate.name}.csv", index=False)
             self._candidates[candidate.name] = candidate
             result = {"candidate": candidate.name, "model": candidate.model, "groups": ", ".join(candidate.groups),

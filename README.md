@@ -43,6 +43,10 @@ python -m pip install -r requirements.txt
 python -m pip install --no-build-isolation -e .
 ```
 
+XGBoost is included in the project dependencies. On macOS, its native library
+also needs the OpenMP runtime: install it with `brew install libomp` if importing
+`xgboost` reports a missing `libomp.dylib`.
+
 Install VS Code's Python and Jupyter extensions and select `.venv/bin/python` as the
 notebook kernel. Put the official files in `data/raw/`: `train.jsonl`, `test.jsonl`,
 `sample_submission.csv`, and `type_chart_gen2.csv`. Existing `data/` files are also

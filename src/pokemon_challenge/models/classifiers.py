@@ -15,6 +15,12 @@ def make_pipeline(model="logistic_regression", *, seed=42, percentile=100, param
         "random_forest": (RandomForestClassifier, {"n_estimators": 150, "n_jobs": 1, "random_state": seed}),
         "hist_gradient_boosting": (HistGradientBoostingClassifier, {"random_state": seed}),
     }
+    if model == "xgboost":
+        from xgboost import XGBClassifier
+        defaults["xgboost"] = (XGBClassifier, {
+            "objective": "binary:logistic", "eval_metric": "logloss",
+            "tree_method": "hist", "n_jobs": 1, "random_state": seed,
+        })
     if model not in defaults:
         raise ValueError(f"Unknown model {model!r}; choose one of {list(defaults)}")
     constructor, settings = defaults[model]
