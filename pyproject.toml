@@ -11,3 +11,6 @@ dependencies = ["numpy", "pandas", "scikit-learn", "scipy", "joblib", "tqdm", "x
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"pokemon_challenge.features" = ["species_base_stats*.json"]

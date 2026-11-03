@@ -1,0 +1,11 @@
+{
+  "primary": "supplied train/test p1_team_details and p2_lead_details; no outcome labels",
+  "fallback_species": [
+    "charizardmegay",
+    "weedle",
+    "ledyba",
+    "nidorina",
+    "remoraid"
+  ],
+  "fallback_url": "https://github.com/smogon/pokemon-showdown/blob/master/data/pokedex.ts"
+}
