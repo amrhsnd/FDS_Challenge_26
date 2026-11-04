@@ -1,21 +1,17 @@
-"""Check state tracking and move attribution in Amir's notebook features."""
-from collections import Counter
-import json
+"""Check state tracking and observed HP changes in battle summaries."""
 from pathlib import Path
 import unittest
+import sys
 
-import numpy as np
 
 
 class RequestedFeatureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        path = Path(__file__).resolve().parents[1] / 'notebooks/amirhosein/amirs-notebook.ipynb'
-        notebook = json.loads(path.read_text())
-        source = next(''.join(cell['source']) for cell in notebook['cells']
-                      if 'def extract_selected_features(' in ''.join(cell['source']))
-        cls.namespace = {'np': np, 'Counter': Counter}
-        exec(compile(source, str(path), 'exec'), cls.namespace)
+        root = Path(__file__).resolve().parents[1]
+        sys.path[:0] = [str(root / 'src'), str(root / 'notebooks/amirhosein')]
+        import features
+        cls.namespace = vars(features)
 
     @staticmethod
     def state(name, hp, status='nostatus', boosts=None):
