@@ -10,11 +10,11 @@ trajectory summaries. Its raw keys are stable identifiers used by the feature
 catalog; public model columns receive descriptive names from that catalog.
 """
 from collections import Counter
+from functools import partial
 
 import numpy as np
 
 from pokemon_challenge.features.first_knockout import first_ko_advantage
-from pokemon_challenge.features.observed_roster import p2_observed_roster_stats
 from pokemon_challenge.features.retained_position import (
     NEW_FEATURE_COLUMNS, retained_position_features,
 )
@@ -29,6 +29,7 @@ TYPES = (
     'rock', 'steel', 'water',
 )
 BOOST_STATS = ('atk', 'def', 'spa', 'spd', 'spe')
+P2_ROSTER_STAT_COLUMNS = ('p2_mean_hp', 'p2_mean_atk', 'p2_mean_def', 'p2_mean_spe')
 # Fixed core schema for roster, HP, moves, boosts and retained resources.
 BASE_FEATURE_COLUMNS = (
     'p2_team_hp_pct_at_turn30',
@@ -51,10 +52,7 @@ BASE_FEATURE_COLUMNS = (
     'p2_no_of_moves',
     'p1_special_moves',
     'p1_mean_atk',
-    'p2_mean_hp',
-    'p2_mean_atk',
-    'p2_mean_def',
-    'p2_mean_spe',
+    *P2_ROSTER_STAT_COLUMNS,
     'p1_mean_def',
     'p1_damage_surplus',
     'p2_damage_surplus',
@@ -171,7 +169,7 @@ def extract_damage_surplus_features(battle):
     }
 
 
-def extract_selected_features(battle, *, include_candidates=False):
+def extract_selected_features(battle, *, include_candidates=False, include_p2_roster_stats=True):
     """Return core numeric summaries, or all computed core candidates when enabled."""
     roster = battle.get('p1_team_details') or []
     lead = battle.get('p2_lead_details') or {}
@@ -233,33 +231,39 @@ def extract_selected_features(battle, *, include_candidates=False):
         features[f'{side}_mean_boosts'] = float(np.mean(boost_sums[side])) if boost_sums[side] else 0.0
     features['alive_diff_at_turn30'] = features['p1_alive_at_turn30'] - features['p2_alive_at_turn30']
     features['first_ko_advantage'] = first_ko_advantage(battle)
-    features.update(p2_observed_roster_stats(battle))
+    if include_p2_roster_stats:
+        from pokemon_challenge.features.observed_roster import p2_observed_roster_stats
+        features.update(p2_observed_roster_stats(battle))
     features.update(extract_requested_features(battle))
     features.update(extract_damage_surplus_features(battle))
     features.update(retained_position_features(battle))
-    return features if include_candidates else {name: features[name] for name in FEATURE_COLUMNS}
+    return features if include_candidates else {
+        name: features[name] for name in FEATURE_COLUMNS
+        if include_p2_roster_stats or name not in P2_ROSTER_STAT_COLUMNS}
 
 
 
-def expanded_core_features(battle):
+def expanded_core_features(battle, *, include_p2_roster_stats=True):
     """Return complementary core summaries outside the fixed core schema."""
-    all_features = extract_selected_features(battle, include_candidates=True)
+    all_features = extract_selected_features(
+        battle, include_candidates=True, include_p2_roster_stats=include_p2_roster_stats)
     return {name: value for name, value in all_features.items() if name not in FEATURE_COLUMNS}
 
 
-def build_feature_functions(chart_path):
+def build_feature_functions(chart_path, *, include_p2_roster_stats=True):
     """Build numeric feature groups using the supplied type-effectiveness chart.
 
     Callers should pass observations restricted to valid turns 1–30 in
     chronological order. Every group returns a fixed dictionary of numeric
     values. Unknown estimates remain NaN for imputation inside training folds.
+    Disable P2 roster stats to avoid the static species lookup entirely.
     """
     from battle_features import FEATURE_GROUPS
     from team_features import make_team_feature_groups
 
     return {
-        "selected": extract_selected_features,
-        "expanded_core": expanded_core_features,
+        "selected": partial(extract_selected_features, include_p2_roster_stats=include_p2_roster_stats),
+        "expanded_core": partial(expanded_core_features, include_p2_roster_stats=include_p2_roster_stats),
         **FEATURE_GROUPS,
         **make_team_feature_groups(chart_path),
     }

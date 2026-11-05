@@ -25,7 +25,7 @@ from pokemon_challenge.data import iter_battles as read_battles
 from pokemon_challenge.experiment import Candidate
 from pokemon_challenge.validation.splits import make_splits
 
-SPEC = importlib.util.spec_from_file_location('amir_study_under_test', ROOT / 'notebooks/amirhosein/study.py')
+SPEC = importlib.util.spec_from_file_location('amir_study_under_test', ROOT / 'notebooks/_amir_support/study.py')
 study = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(study)
 

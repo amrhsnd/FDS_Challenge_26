@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location('feature_reduction_under_test',
-    ROOT / 'notebooks/amirhosein/feature_selection.py')
+    ROOT / 'notebooks/_amir_support/feature_selection.py')
 module = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(module)
 CorrelationUtilitySelector = module.CorrelationUtilitySelector

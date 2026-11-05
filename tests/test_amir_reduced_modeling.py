@@ -15,7 +15,7 @@ from sklearn.base import clone
 from sklearn.metrics import accuracy_score
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT / 'src'), str(ROOT / 'notebooks/amirhosein')]
+sys.path[:0] = [str(ROOT / 'src'), str(ROOT / 'notebooks/_amir_support')]
 import modeling
 import study
 from feature_catalog import FEATURE_NAMES
@@ -27,6 +27,19 @@ from team_features import _schema_fixture
 
 
 class NamedFeatureLibraryTests(unittest.TestCase):
+    def test_excluding_p2_roster_stats_skips_species_lookup(self):
+        with tempfile.TemporaryDirectory() as directory:
+            chart = Path(directory) / 'chart.csv'
+            chart.write_text('attacking_type,defending_type,multiplier\nwater,fire,2\n')
+            library = modeling.BattleFeatureLibrary(chart, include_p2_roster_stats=False)
+        with patch('pokemon_challenge.features.observed_roster.p2_observed_roster_stats') as lookup:
+            row = library(study.observed_battle(_schema_fixture()))
+            lookup.assert_not_called()
+        excluded = {FEATURE_NAMES[f'selected__p2_mean_{stat}']
+                    for stat in ('hp', 'atk', 'def', 'spe')}
+        self.assertEqual(set(row), set(FEATURE_NAMES.values()) - excluded)
+        self.assertEqual(len(row), 753)
+
     def test_valid_observation_has_757_semantic_names_and_no_source_prefixes(self):
         with tempfile.TemporaryDirectory() as directory:
             chart = Path(directory) / 'chart.csv'
@@ -90,8 +103,9 @@ class ReducedModelTests(unittest.TestCase):
             ''.join(json.dumps(battle) + '\n' for battle in self.battles))
         self.read_paths = []
 
-        def numeric_library(chart_path):
+        def numeric_library(chart_path, *, include_p2_roster_stats=True):
             self.assertEqual(Path(chart_path), self.data / 'type_chart_gen2.csv')
+            self.assertTrue(include_p2_roster_stats)
             def values(battle):
                 self.assertEqual(set(battle),
                     {'p1_team_details', 'p2_lead_details', 'battle_timeline'})

@@ -10,7 +10,7 @@ import unittest
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "notebooks/amirhosein"))
+sys.path.insert(0, str(ROOT / "notebooks/_amir_support"))
 from team_features import FEATURE_DESCRIPTIONS, _schema_fixture, make_team_feature_groups, sanitize_battle
 
 
@@ -83,7 +83,7 @@ class TeamFeatureTests(unittest.TestCase):
 
     def test_real_record_horizon_target_and_schema(self):
         candidates = [ROOT / "data/raw/train.jsonl", ROOT / "data/train.jsonl",
-                      Path("/Users/amrhsnd/Desktop/FDS/2026/Challange/raw data/train.jsonl")]
+                      ROOT.parent / "raw data/train.jsonl"]
         path = next((candidate for candidate in candidates if candidate.is_file()), None)
         if path is None:
             self.skipTest("Official local training input not present")

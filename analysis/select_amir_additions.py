@@ -4,6 +4,7 @@ Run from the repository with its .venv Python. This is exploratory development-
 only selection, not an unbiased estimate of the selected features' future gain.
 The existing holdout is never evaluated and official test data is never read.
 """
+from argparse import ArgumentParser
 from collections import Counter
 from datetime import datetime
 import hashlib
@@ -50,13 +51,22 @@ def evaluate(X, y, folds, pipeline):
 
 
 def main():
+    parser = ArgumentParser(description=__doc__)
+    parser.add_argument(
+        '--baseline-notebook', type=Path,
+        default=ROOT / 'outputs/amirhosein/20261103_171946_feature_selection/baseline_notebook.ipynb',
+        help='Path to the archived 28-feature baseline notebook.',
+    )
+    notebook_path = parser.parse_args().baseline_notebook
+    if not notebook_path.is_file():
+        parser.error('provide the archived 28-feature notebook with --baseline-notebook')
+
     from feature_candidates import extract_candidate_features
     from retained_material_candidates import extract_retained_material_candidates
 
     run = datetime.now(ZoneInfo('Europe/Rome')).strftime('%Y%m%d_%H%M%S_feature_selection')
     output = ROOT / 'outputs' / 'amirhosein' / run
     output.mkdir(parents=True, exist_ok=False)
-    notebook_path = ROOT / 'notebooks/amirhosein/amirs-notebook.ipynb'
     snapshot = output / 'baseline_notebook.ipynb'
     shutil.copyfile(notebook_path, snapshot)
     for module in ['select_amir_additions.py', 'feature_candidates.py', 'retained_material_candidates.py']:

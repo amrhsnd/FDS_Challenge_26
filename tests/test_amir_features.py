@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path[:0] = [str(ROOT / 'src'), str(ROOT / 'notebooks/amirhosein')]
+sys.path[:0] = [str(ROOT / 'src'), str(ROOT / 'notebooks/_amir_support')]
 from features import build_feature_functions
 from study import observed_battle
 from team_features import _schema_fixture

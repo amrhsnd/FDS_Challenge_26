@@ -17,22 +17,27 @@ from pokemon_challenge.experiment import Candidate, _write_json
 from pokemon_challenge.models.classifiers import make_pipeline
 from feature_catalog import FEATURE_NAMES, feature_dictionary
 from feature_selection import CorrelationUtilitySelector
-from features import build_feature_functions
+from features import P2_ROSTER_STAT_COLUMNS, build_feature_functions
 from study import AmirStudy
 
 
 class BattleFeatureLibrary:
     """Compute fixed numeric battle measurements with descriptive, unique names."""
-    def __init__(self, chart_path):
-        self.functions = build_feature_functions(chart_path)
+    def __init__(self, chart_path, *, include_p2_roster_stats=True):
+        self.functions = build_feature_functions(
+            chart_path, include_p2_roster_stats=include_p2_roster_stats)
+        self.feature_names = dict(FEATURE_NAMES)
+        if not include_p2_roster_stats:
+            for key in P2_ROSTER_STAT_COLUMNS:
+                del self.feature_names[f'selected__{key}']
 
     def __call__(self, battle):
         row = {}
         for group, function in self.functions.items():
             for key, value in function(battle).items():
                 raw = f'{group}__{key}'
-                row[FEATURE_NAMES[raw]] = value
-        if len(row) != len(FEATURE_NAMES):
+                row[self.feature_names[raw]] = value
+        if len(row) != len(self.feature_names):
             raise ValueError('The feature schema does not match its definitions.')
         return row
 
@@ -40,13 +45,15 @@ class BattleFeatureLibrary:
 class ReducedBattleStudy(AmirStudy):
     """Fit feature selection inside each fold; expose a documented 300-column view."""
     def __init__(self, *, data_path, owner, run, n_features=300,
-                 correlation_threshold=.90, **kwargs):
+                 correlation_threshold=.90, include_p2_roster_stats=True, **kwargs):
         self.n_features = n_features
         self.correlation_threshold = correlation_threshold
+        library = BattleFeatureLibrary(Path(data_path)/'type_chart_gen2.csv',
+                                       include_p2_roster_stats=include_p2_roster_stats)
         super().__init__(owner=owner, run=run, data_path=data_path,
-            feature_functions={'battle': BattleFeatureLibrary(Path(data_path)/'type_chart_gen2.csv')},
-            **kwargs)
+                         feature_functions={'battle': library}, **kwargs)
         self.manifest.update(model_features=n_features,
+            include_p2_roster_stats=include_p2_roster_stats,
             feature_selection='Fold-fitted utility ranking and absolute Pearson correlation pruning',
             requested_correlation_threshold=correlation_threshold)
         _write_json(self.output_path/'experiment.json', self.manifest)
@@ -122,11 +129,11 @@ class ReducedBattleStudy(AmirStudy):
         root = Path(root)
         destination = self.output_path/'sources'
         personal = root/'notebooks/amirhosein'
-        paths = list(personal.glob('*.py')) + [personal/'amirs-notebook.ipynb']
+        paths = list((root/'notebooks/_amir_support').glob('*.py')) + [personal/'amirs-notebook.ipynb']
         paths += list((root/'src').rglob('*.py')) + list((root/'src').rglob('*.json'))
         paths += list((root/'notebooks/aimilia').glob('*.py'))
         paths += [root/'notebooks/leonard'/name for name in
-                  ('ablation_extensions.py', 'progressive_features.py')]
+                  ('ablation_extensions.py', 'identity_features.py', 'progressive_features.py')]
         paths += [root/'configs/validation.json', root/'requirements.txt', root/'pyproject.toml']
         manifest = []
         for path in paths:
@@ -139,6 +146,7 @@ class ReducedBattleStudy(AmirStudy):
         _write_json(self.output_path/'source_manifest.json', manifest)
         _write_json(self.output_path/'settings.json', {
             'n_features': self.n_features, 'correlation_threshold': self.correlation_threshold,
+            'include_p2_roster_stats': self.manifest['include_p2_roster_stats'],
             'selection_scope': 'inside training folds',
             'validation': self.validation, 'holdout_evaluated': self.manifest['holdout_evaluated'],
             'test_read': self.manifest['test_read']})

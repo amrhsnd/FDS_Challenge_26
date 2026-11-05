@@ -7,7 +7,7 @@ import unittest
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / 'notebooks/amirhosein'))
+sys.path.insert(0, str(ROOT / 'notebooks/_amir_support'))
 from feature_catalog import (FEATURE_NAMES, FEATURE_DOCUMENTATION,
                              feature_dictionary, rename_frame)
 

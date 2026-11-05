@@ -9,7 +9,7 @@ class RequestedFeatureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         root = Path(__file__).resolve().parents[1]
-        sys.path[:0] = [str(root / 'src'), str(root / 'notebooks/amirhosein')]
+        sys.path[:0] = [str(root / 'src'), str(root / 'notebooks/_amir_support')]
         import features
         cls.namespace = vars(features)
 

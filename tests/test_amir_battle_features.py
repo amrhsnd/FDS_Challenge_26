@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 import unittest
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "notebooks/amirhosein"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "notebooks/_amir_support"))
 from battle_features import (FEATURE_GROUPS, STATS, active_position_features,
                             observed_turns, recent_flow_features,
                             roster_shape_features, status_resource_features)
