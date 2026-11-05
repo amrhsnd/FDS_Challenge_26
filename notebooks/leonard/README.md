@@ -66,6 +66,14 @@ team members are invented. Run `run_matchup_experiment.py` to reproduce.
 The selected model's separate submission is at:
 `outputs/leonard/20261102_154044_358954_matchups/submission.csv`.
 
+[11_counter_quality.ipynb](11_counter_quality.ipynb) tests counter redundancy,
+HP quality and both on top of the unchanged 316-input procedure. HP quality wins:
+**324 inputs, 67.396% mean CV accuracy**, versus 67.259% for the 316-input model.
+It improves four of five folds (net 11 additional correct predictions), a small
+exploratory gain. Run `run_counter_experiment.py` to reproduce. The selected
+model's separate submission is at:
+`outputs/leonard/20261103_140058_542958_counter_quality/submission.csv`.
+
 The runner scripts and feature implementations live beside their notebooks.
 `run_classical_identity_experiment.py` runs the initial classical comparison;
 `run_identity_scaling_followup.py` runs its three-setting follow-up. The tests
@@ -82,8 +90,64 @@ Their runners reference earlier local feature/split caches and run IDs: those
 ignored artifacts must exist, or their paths must be updated to corresponding
 recreated runs. A fresh clone alone does not include those caches.
 
+[13_frozen_matchup_submission.ipynb](13_frozen_matchup_submission.ipynb) is the
+current submission entrypoint for Leonard's selected **316-feature matchup-only
+logistic regression** (300 RFE features + 16 team-matchup features; 67.259%
+historical development CV accuracy, 68.80% public accuracy reported by the user).
+It contains all feature and training code, with comments and short Markdown
+explanations before each of its 19 code cells. It reads the frozen configuration
+from `frozen_matchup_submission.json`, rebuilds inputs from the four official
+files, and refits on all 10,000 training battles. No counter-quality additions or
+earlier experiment caches are used.
+
+Run all cells. The exact earlier matchup CSV is saved locally to
+`outputs/leonard/frozen_matchup_submission/submission.csv`, or to
+`/kaggle/working/submission.csv` on Kaggle. Its expected SHA-256 is
+`4744bf724de616e9857606470f953eca0ecdf2108a0dc3d9884beed165a22051`.
+The notebook verifies all 316 selected feature names and the CSV checksum before
+writing it, and saves a `reproduction_report.json`. All 19 code cells were
+executed locally in order and reproduced all 5,000 earlier predictions exactly.
+Publish this notebook and its dedicated JSON manifest to the configured GitHub
+revision before running on Kaggle. Kaggle execution itself has not been tested.
+
+[12_frozen_submission.ipynb](12_frozen_submission.ipynb) retains the earlier
+**324-feature logistic regression (67.396% historical development CV accuracy)**
+as a separate alternative. Its usage details below apply to that alternative. Run all cells in order. It rebuilds features and fits RFE/the model
+from `train.jsonl`, `test.jsonl`, `sample_submission.csv` and
+`type_chart_gen2.csv`, without any earlier experiment caches. Set
+`POKEMON_DATA_DIR` if the official inputs are not under `data/raw` or the detected
+Kaggle competition directory.
+
+All feature extraction, encoders, type matching, counter quality, RFE, model
+fitting and CSV generation are visible in the notebook's 20 code cells. Each has
+a short Markdown explanation and code comments. It does not import or call
+`create_submission()` or hide model logic in repository modules.
+`frozen_submission.json` supplies the frozen column order, feature names,
+input checksums, reference dependencies and exact submission checksum.
+The separate `frozen_submission.py` remains available as the earlier programmatic
+entrypoint, but the reviewer notebook executes its own visible implementation.
+The notebook can install
+the reference versions before importing ML libraries. A fresh kernel is required
+when installing those versions. The checked CSV is written to
+`outputs/leonard/frozen_submission/submission.csv` locally, or
+`/kaggle/working/submission.csv` on Kaggle. `reproduction_report.json` records the
+successful checksum check and runtime versions.
+
+Before running on Kaggle, publish the updated notebook and frozen JSON manifest
+to the configured GitHub branch. The notebook clones that branch to obtain the
+configuration; set `REPO_REVISION` to the final published
+commit when assembling the team hand-in. Enable Internet for cloning/dependencies
+and attach the competition dataset. This produces Leonard's one submission;
+the team notebook must generate all three selected submissions. It does not
+submit predictions or publish the notebook automatically.
+
+All 324-feature notebook code cells were executed in order locally: full raw-data rebuild,
+10,000 training rows, 324 final features, 5,000 predictions, exact original CSV
+SHA-256 `4692f7dbde612160235b9fcb1a882da24429fdd65ce8dc322149b3ea2edc907b`.
+Kaggle execution itself has not been tested.
+
 Generated data, executed notebook snapshots, models and submissions stay under
-ignored `outputs/`. The final simple-model CSV is at:
-`outputs/leonard/20261102_124639_898979_classical_identity_followup/submission.csv`.
+ignored `outputs/`. Earlier CSV paths in experiment sections are historical;
+use notebook 13 and its `frozen_matchup_submission` output for the selected model.
 
 Keep your exploration notebooks here. Copy `templates/exploration.ipynb` to start. Use your own branch and descriptive notebook names.
