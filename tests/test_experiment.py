@@ -53,6 +53,13 @@ class ExperimentTests(unittest.TestCase):
         self.assertEqual(sorted(seen), list(range(len(a.development))))
         with self.assertRaises(FileExistsError): self.experiment()
 
+    def test_packaged_validation_matches_checkout_defaults(self):
+        checkout = self.experiment("checkout")
+        with patch("pokemon_challenge.experiment.project_root", side_effect=FileNotFoundError):
+            packaged = self.experiment("installed")
+        self.assertEqual(packaged.validation, checkout.validation)
+        self.assertEqual(packaged.manifest["splits_sha256"], checkout.manifest["splits_sha256"])
+
     def test_compare_holdout_lock_and_submission_alignment(self):
         experiment = self.experiment()
         with self.assertRaises(RuntimeError): experiment.make_submission()

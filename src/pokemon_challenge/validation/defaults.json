@@ -1,0 +1,8 @@
+{
+  "seed": 42,
+  "metric": "accuracy",
+  "splitter": "StratifiedKFold",
+  "n_splits": 5,
+  "shuffle": true,
+  "holdout_size": 0.2
+}

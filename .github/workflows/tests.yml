@@ -1,0 +1,30 @@
+name: Python tests
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - python: "3.11"
+            sklearn_requirement: "scikit-learn==1.4.2"
+          - python: "3.14"
+            sklearn_requirement: "scikit-learn"
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+      - name: Install and check dependencies
+        env:
+          SKLEARN_REQUIREMENT: ${{ matrix.sklearn_requirement }}
+        run: |
+          python -m pip install -r requirements.txt -e . "$SKLEARN_REQUIREMENT"
+          python -m pip check
+      - run: python -m unittest discover -s tests -v

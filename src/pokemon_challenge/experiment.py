@@ -1,6 +1,7 @@
 """Notebook-facing API for comparable CV experiments and guarded final evaluation."""
 from dataclasses import asdict, dataclass, field
 import hashlib
+from importlib.resources import files
 import inspect
 import json
 from numbers import Real
@@ -63,8 +64,12 @@ class BattleExperiment:
 
     def __init__(self, owner, run, *, feature_functions=None, data_path=None, validation=None):
         self.data_path = Path(data_path) if data_path is not None else data_dir()
-        config_path = project_root() / "configs/validation.json"
-        self.validation = json.loads(config_path.read_text())
+        try:
+            config_path = project_root() / "configs/validation.json"
+            config_text = config_path.read_text(encoding="utf-8")
+        except FileNotFoundError:
+            config_text = files("pokemon_challenge.validation").joinpath("defaults.json").read_text(encoding="utf-8")
+        self.validation = json.loads(config_text)
         self.validation.setdefault("holdout_size", 0.2)
         self.validation.update(validation or {})
         if self.validation.get("metric") != "accuracy" or self.validation.get("splitter") != "StratifiedKFold":

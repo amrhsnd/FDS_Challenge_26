@@ -34,13 +34,13 @@ FDS_Challenge_26/
 
 ## Set up on each machine
 
-Open **this repository folder** in VS Code. Create/activate a local environment:
+Use Python 3.11 or newer and open **this repository folder** in VS Code. Create
+and activate a local environment:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m pip install --no-build-isolation -e .
+python -m pip install -r requirements.txt -e .
 ```
 
 XGBoost is included in the project dependencies. On macOS, its native library
@@ -53,6 +53,8 @@ notebook kernel. Put the official files in `data/raw/`: `train.jsonl`, `test.jso
 supported, as are the competition's common Kaggle mount paths.
 
 Open `notebooks/reference/starter-notebook.ipynb` for the original baseline.
+For exact submission reproduction, follow the
+[frozen runtime setup](notebooks/leonard/README.md#frozen-runtime-setup).
 Copy `templates/exploration.ipynb` into your personal notebook folder for new work.
 Its setup cell also works without installing the shared package when run from a
 folder inside this repository. Use the editable install for imports from elsewhere.
@@ -127,6 +129,10 @@ run_folder = output_dir("leonard", "20261029_01_hp_features")
 `output_dir` creates the run folder. On Kaggle it uses `/kaggle/working/outputs/`;
 locally it uses this repository's `outputs/`. Set `POKEMON_DATA_DIR` when data lives
 elsewhere. Battle IDs are unique within each split and may overlap between splits.
+
+When using the installed package outside a checkout, pass `data_path` to
+`BattleExperiment` or set `POKEMON_DATA_DIR`. The experiment uses the packaged
+validation defaults and writes runs under `outputs/` in the current directory.
 
 ## Compare and reproduce
 

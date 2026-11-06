@@ -641,20 +641,12 @@
     "notebooks/aimilia/features_timeline.py": "73661ad55b5461bd8ea6ce08f051c24f528e238fbf4d8ecfc8ca1cd373ad0a0b",
     "notebooks/leonard/ablation_extensions.py": "e317497d39304dac0b5a068d4af0ac1206a35cbe918d4f7a083860c4af304c2b",
     "notebooks/leonard/counter_features.py": "03957007b4a716eb0e2a1627d565e342cb954bbe95c9114a581e19b5ceb6db51",
-    "notebooks/leonard/frozen_submission.py": "2d83d48adb91b689291b69d3ee2c76576eb0822e27b2ff959c51f4342066745e",
+    "notebooks/leonard/frozen_submission.py": "a843a8f71a2dc280f4c5b1300d0b5edb4de409ff2a02ef5f4738cc687790a8b6",
     "notebooks/leonard/identity_features.py": "90030b164b45ca4564142551047b2334244e396827fa9e4fe918b7792f691516",
     "notebooks/leonard/matchup_features.py": "91022645c12fbee74a71c3851d4ab60bd5fadb9d3cb0705c96044a6b1f976ba8",
     "notebooks/leonard/progressive_features.py": "6c2aacf928ef7d9501aad9b6f7884535467e860d507a09dcf180e6baceb7bf09",
     "notebooks/leonard/run_progressive_experiments.py": "28b518b338118bd013a8a93b46b5ef25b44f4a23ab8afa1add5270f20ed538e5",
     "src/pokemon_challenge/__init__.py": "36e0c86e07e83b701e3d1ba7c17e070c16747ab549bac1a4180ec71853bd3b66",
-    "src/pokemon_challenge/data.py": "034582512297ba0add3275e84458c6f1343eedc5a049426b339c3f81bf4fd5e0",
-    "src/pokemon_challenge/experiment.py": "15216505cb473cb4d9fd3318acc59608834179b123ae4be929654436fa326558",
-    "src/pokemon_challenge/features/__init__.py": "6638dc7b54551a2b2dee31c5ea2c4afe0e1bfffa7dcf8f05871222341de70117",
-    "src/pokemon_challenge/features/basic.py": "1caa86ddd1aa464a0ea96c01a26a795a8fb57227392441e7cf87b2abccf4f00f",
-    "src/pokemon_challenge/models/__init__.py": "224f78b72107d472594e8f9216cdfc8f47ed9e3e87a3fe1ae6afaf98534be6d2",
-    "src/pokemon_challenge/models/classifiers.py": "b0594abe702099026c4e0c8bf7bf88d4cb90362e02336c74bc7b3e2d506d486c",
-    "src/pokemon_challenge/paths.py": "76e08e261499f595eadd5559eff501efade003e98e75b76d6844558c0a636752",
-    "src/pokemon_challenge/validation/__init__.py": "ad0fa52a76ec737707c38c23b1fe200244442a6e0b6897d597ca6febfdb8a529",
-    "src/pokemon_challenge/validation/splits.py": "60b7b4cfce9ce73cd9539f037ef44bdcdd8e55a80b7feebb6a61fafc4541ba39"
+    "src/pokemon_challenge/data.py": "034582512297ba0add3275e84458c6f1343eedc5a049426b339c3f81bf4fd5e0"
   }
 }

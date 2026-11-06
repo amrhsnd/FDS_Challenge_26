@@ -41,7 +41,15 @@ def output_dir(owner, run):
     for value in (owner, run):
         if not isinstance(value, str) or not value or value in {".", ".."} or "/" in value or "\\" in value:
             raise ValueError("Owner and run must each be a single nonempty folder name.")
-    base = Path("/kaggle/working/outputs") if Path("/kaggle/working").is_dir() else project_root() / "outputs"
+    kaggle_working = Path("/kaggle/working")
+    if kaggle_working.is_dir():
+        base = kaggle_working / "outputs"
+    else:
+        try:
+            root = project_root()
+        except FileNotFoundError:
+            root = Path.cwd()
+        base = root / "outputs"
     destination = base / owner / run
     destination.mkdir(parents=True, exist_ok=True)
     return destination
