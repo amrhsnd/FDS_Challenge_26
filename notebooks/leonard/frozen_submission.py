@@ -99,6 +99,7 @@ def create_submission(data_directory, output_directory):
     """Fit the frozen procedure; fail if data, source, selection or CSV drift."""
     spec = json.loads(MANIFEST.read_text())
     data_directory, output_directory = Path(data_directory), Path(output_directory)
+    # Track the code that determines predictions. This run does not call the shared experiment pipeline.
     for name, expected in spec['source_sha256'].items():
         if sha256(ROOT / name) != expected:
             raise ValueError(f'Frozen source changed: {name}')

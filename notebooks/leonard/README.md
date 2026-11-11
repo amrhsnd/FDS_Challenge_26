@@ -100,20 +100,18 @@ from `frozen_matchup_submission.json`, rebuilds inputs from the four official
 files, and refits on all 10,000 training battles. No counter-quality additions or
 earlier experiment caches are used.
 
-Run all cells. The exact earlier matchup CSV is saved locally to
+Prepare the [frozen runtime](#frozen-runtime-setup), then run all cells. The exact
+earlier matchup CSV is saved locally to
 `outputs/leonard/frozen_matchup_submission/submission.csv`, or to
 `/kaggle/working/submission.csv` on Kaggle. Its expected SHA-256 is
 `4744bf724de616e9857606470f953eca0ecdf2108a0dc3d9884beed165a22051`.
 The notebook verifies all 316 selected feature names and the CSV checksum before
 writing it, and saves a `reproduction_report.json`. All 19 code cells were
 executed locally in order and reproduced all 5,000 earlier predictions exactly.
-Publish this notebook and its dedicated JSON manifest to the configured GitHub
-revision before running on Kaggle. Kaggle execution itself has not been tested.
-
 [12_frozen_submission.ipynb](12_frozen_submission.ipynb) retains the earlier
 **324-feature logistic regression (67.396% historical development CV accuracy)**
-as a separate alternative. Its usage details below apply to that alternative. Run all cells in order. It rebuilds features and fits RFE/the model
-from `train.jsonl`, `test.jsonl`, `sample_submission.csv` and
+as a separate alternative. Run all cells in order with the frozen runtime. It
+rebuilds features and fits RFE/the model from `train.jsonl`, `test.jsonl`, `sample_submission.csv` and
 `type_chart_gen2.csv`, without any earlier experiment caches. Set
 `POKEMON_DATA_DIR` if the official inputs are not under `data/raw` or the detected
 Kaggle competition directory.
@@ -126,25 +124,102 @@ a short Markdown explanation and code comments. It does not import or call
 input checksums, reference dependencies and exact submission checksum.
 The separate `frozen_submission.py` remains available as the earlier programmatic
 entrypoint, but the reviewer notebook executes its own visible implementation.
-The notebook can install
-the reference versions before importing ML libraries. A fresh kernel is required
-when installing those versions. The checked CSV is written to
+The checked CSV is written to
 `outputs/leonard/frozen_submission/submission.csv` locally, or
 `/kaggle/working/submission.csv` on Kaggle. `reproduction_report.json` records the
 successful checksum check and runtime versions.
 
-Before running on Kaggle, publish the updated notebook and frozen JSON manifest
-to the configured GitHub branch. The notebook clones that branch to obtain the
-configuration; set `REPO_REVISION` to the final published
-commit when assembling the team hand-in. Enable Internet for cloning/dependencies
-and attach the competition dataset. This produces Leonard's one submission;
-the team notebook must generate all three selected submissions. It does not
-submit predictions or publish the notebook automatically.
-
 All 324-feature notebook code cells were executed in order locally: full raw-data rebuild,
 10,000 training rows, 324 final features, 5,000 predictions, exact original CSV
 SHA-256 `4692f7dbde612160235b9fcb1a882da24429fdd65ce8dc322149b3ea2edc907b`.
-Kaggle execution itself has not been tested.
+
+## Frozen runtime setup
+
+Both submission notebooks verify Python 3.12 or newer and the exact package
+versions in their JSON manifests before importing the model dependencies. The
+main project environment may resolve newer versions. Install the reference
+packages before starting the interpreter that will execute the notebook.
+
+### Local kernel
+
+From the repo root, create a dedicated environment. The example uses Python 3.14
+and notebook 13. For notebook 12, use `frozen_submission.json` instead.
+
+```bash
+python3.14 -m venv outputs/leonard/frozen-runtime
+outputs/leonard/frozen-runtime/bin/python - <<'PY'
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+manifest = Path('notebooks/leonard/frozen_matchup_submission.json')
+versions = json.loads(manifest.read_text())['versions']
+pins = [f'{name}=={version}' for name, version in versions.items()]
+subprocess.run([sys.executable, '-m', 'pip', 'install', 'ipykernel', *pins], check=True)
+PY
+```
+
+Select `outputs/leonard/frozen-runtime/bin/python` in VS Code's notebook kernel
+picker and start a fresh kernel.
+
+### Kaggle
+
+Enable Internet and attach the official competition data. If the Kaggle kernel
+already has the exact versions, open the updated notebook and run all cells. It
+can clone the frozen JSON configuration at a fixed Git commit.
+
+If the versions differ, run the following in a Kaggle Python notebook. Attach
+the updated submission `.ipynb` as a dataset file, or point `notebook` at its
+path in an updated checkout. The child Python executes that file in order using
+its own virtual environment. The fixed Git commit supplies the JSON manifest.
+
+```python
+import json
+from pathlib import Path
+import subprocess
+import sys
+
+if sys.version_info < (3, 12):
+    raise RuntimeError('Start from a Kaggle runtime with Python 3.12 or newer.')
+
+working = Path('/kaggle/working')
+notebook = Path('/kaggle/input/your-notebook-dataset/13_frozen_matchup_submission.ipynb')
+if not notebook.is_file():
+    raise FileNotFoundError(f'Point notebook to the updated .ipynb file: {notebook}')
+
+revision = '8b99ef161018a2fc07391696edb0804705025322'
+checkout = working / f'fds-frozen-config-{revision[:7]}'
+if not checkout.exists():
+    repo = 'https://github.com/amrhsnd/FDS_Challenge_26.git'
+    subprocess.run(['git', 'clone', '--no-checkout', repo, str(checkout)], check=True)
+subprocess.run(['git', '-C', str(checkout), 'checkout', '--detach', revision], check=True)
+
+manifest_name = {
+    '12_frozen_submission.ipynb': 'frozen_submission.json',
+    '13_frozen_matchup_submission.ipynb': 'frozen_matchup_submission.json',
+}[notebook.name]
+manifest = checkout / 'notebooks/leonard' / manifest_name
+versions = json.loads(manifest.read_text())['versions']
+pins = [f'{name}=={version}' for name, version in versions.items()]
+runtime = working / 'fds-frozen-runtime'
+python = runtime / 'bin/python'
+if not python.is_file():
+    subprocess.run([sys.executable, '-m', 'venv', str(runtime)], check=True)
+subprocess.run([
+    str(python), '-m', 'pip', 'install', 'ipykernel', 'matplotlib', 'nbformat', *pins,
+], check=True)
+
+runner = checkout / 'analysis/execute_notebook.py'
+output = working / f'{notebook.stem}_executed.ipynb'
+subprocess.run([
+    str(python), '-u', str(runner), str(notebook), '--output', str(output),
+], check=True)
+```
+
+Both notebooks write `/kaggle/working/submission.csv` and
+`/kaggle/working/reproduction_report.json`. Save each pair before running the
+other notebook if you need both submissions.
 
 Generated data, executed notebook snapshots, models and submissions stay under
 ignored `outputs/`. Earlier CSV paths in experiment sections are historical;

@@ -7,10 +7,11 @@ name = "fds-pokemon-challenge"
 version = "0.1.0"
 description = "Shared tools for the FDS Pokemon battle prediction team"
 requires-python = ">=3.11"
-dependencies = ["numpy", "pandas", "scikit-learn", "scipy", "joblib", "tqdm", "xgboost>=3.0,<4"]
+dependencies = ["numpy", "pandas", "scikit-learn>=1.4.2", "scipy", "joblib", "tqdm", "xgboost>=3.0,<4"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
 "pokemon_challenge.features" = ["species_base_stats*.json"]
+"pokemon_challenge.validation" = ["defaults.json"]

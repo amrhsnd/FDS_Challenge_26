@@ -1,13 +1,15 @@
-setuptools>=68
 numpy
 pandas
-scikit-learn
+scikit-learn>=1.4.2
 scipy
 joblib
 matplotlib
 seaborn
 ipykernel
+ipython
 ipywidgets
 nbformat
+threadpoolctl
 tqdm
+traitlets
 xgboost>=3.0,<4
