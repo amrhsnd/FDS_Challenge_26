@@ -10,13 +10,15 @@ Can we predict who wins a Pokémon battle from its first 30 turns? In this [Kagg
 
 ## Start here
 
+We worked in parallel across separate notebooks, building on the course baseline to explore different ways of predicting the winner from a partial battle. We turned the starting lineup information and the events we could observe into features, then tested which groups of features helped the models. Across the notebooks, we compared linear and tree-based models and tried combining their predictions. We used cross-validation to check when extra features or a more complex model improved accuracy enough to keep.
+
 | Notebook | Approach |
 | --- | --- |
 | [Aimilia’s final notebook](notebooks/aimilia/final.ipynb) | 274 battle features with a soft vote between logistic regression and histogram gradient boosting |
 | [Amirhosein’s final notebook](notebooks/amirhosein/amirs-notebook.ipynb) | Combined soft vote using logistic regression, histogram gradient boosting, and XGBoost |
 | [Leonard’s frozen matchup notebook](notebooks/leonard/13_frozen_matchup_submission.ipynb) | Logistic regression with 300 selected features and 16 type-matchup features |
 
-We worked in parallel across separate notebooks, exploring different ways to predict the winner from the part of the battle we could observe. We turned that information into features, tested which ones helped, and compared several models. We also used cross-validation to see whether combining predictions from different models improved accuracy.
+[Reproduce the predictions](#reproduce-the-predictions) to generate the submission CSVs.
 
 ## Project layout
 
