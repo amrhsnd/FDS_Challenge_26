@@ -18,7 +18,7 @@ We used separate notebooks to develop and evaluate different modelling approache
 | [Amirhosein’s final notebook](notebooks/amirhosein/amirs-notebook.ipynb) | Combined soft vote using logistic regression, histogram gradient boosting, and XGBoost |
 | [Leonard’s frozen matchup notebook](notebooks/leonard/13_frozen_matchup_submission.ipynb) | Logistic regression with 300 selected features and 16 type-matchup features |
 
-The features summarize HP changes, knockouts, moves, team composition, and type matchups. Player 2’s unrevealed Pokémon remain unknown.
+We turned the information available early in each battle into features and tested which ones helped predict the winner. We compared different models and tried combining their predictions to see whether they worked better together.
 
 ## Project layout
 
